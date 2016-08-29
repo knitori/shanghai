@@ -134,6 +134,7 @@ class Network:
             event = await self.queue.get()
             print(self.name, event)
 
+            # remember to forward these event to plugins
             if event.name == 'raw_line':
                 try:
                     line = event.value.decode(self.encoding)
@@ -149,10 +150,7 @@ class Network:
                 if message.command == 'PING':
                     self.connection.sendcmd('PONG', *message.params)
                 await self.queue.put(Event('message', message))
-                continue
-
-            # remember to forward these event to plugins
-            if event.name == 'disconnected':
+            elif event.name == 'disconnected':
                 print(self.name, 'connection closed by peer!')
                 break
             elif event.name == 'close_now':
