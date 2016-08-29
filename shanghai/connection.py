@@ -38,6 +38,7 @@ class Connection:
     async def run(self):
         reader, writer = await asyncio.open_connection(
             self.host, self.port, ssl=self.ssl, loop=self.loop)
+        current_logger.debug('Got reader and writer.')
         self.writer = writer
 
         await self.queue.put(Event('connected', self))

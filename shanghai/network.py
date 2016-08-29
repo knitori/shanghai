@@ -87,10 +87,14 @@ class Network:
                                       other_task=other_task)
                 )
 
+            current_logger.debug('Gathering runner and worker task')
             _, stopped = await asyncio.gather(self.runner_task,
                                               self.worker_task,
                                               return_exceptions=True)
+            current_logger.debug('Gathered runner and worker task')
+
             if stopped is True:
+                current_logger.debug('Stopping retrying')
                 self.log_context.pop()
                 return
 
@@ -100,6 +104,8 @@ class Network:
                 'Retry connecting in {} seconds'.format(seconds))
             await asyncio.sleep(seconds)
             self.reset()
+
+        current_logger.debug('Returning normally (should never happen?)')
         self.log_context.pop()
 
     def start_register(self):
