@@ -1,14 +1,14 @@
 
 from setuptools import setup
 
-lic = 'MIT'
+lic = 'GNU General Public License v3 (GPLv3)'
 classifiers = [
     'Programming Language :: Python',
     'Natural Language :: English',
     'Development Status :: 3 - Alpha',
     'Environment :: Console',
     'Intended Audience :: Developers',
-    'License :: ' + lic,
+    'License :: OSI Approved :: ' + lic,
     'Programming Language :: Python :: 3.5',
 ]
 
@@ -29,7 +29,9 @@ setup(
 
     # Requirements
     setup_requires=['pip'],
-    install_requires=[],
+    install_requires=[
+        'ruamel.yaml',
+    ],
     tests_require=['pytest', 'flake8'],
 
     # Scripts and execution

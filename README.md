@@ -2,6 +2,8 @@
 
 # Shanghai (multi server asyncio IRC bot)
 
+IRC: #chireiden @ Freenode
+
 ## Some Notes
 
 ### Primary structure

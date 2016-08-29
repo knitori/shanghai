@@ -1,5 +1,8 @@
 
-ESCAPE_SEQUENCES = {
+from .server_reply import ServerReply
+
+
+_ESCAPE_SEQUENCES = {
     'n': '\n',
     'r': '\r',
     's': ' ',
@@ -21,7 +24,7 @@ class Message:
     @staticmethod
     def escape(value):
         out_value = ''
-        sequences = {v: k for k, v in ESCAPE_SEQUENCES.items()}
+        sequences = {v: k for k, v in _ESCAPE_SEQUENCES.items()}
         for char in value:
             if char in sequences:
                 out_value += '\\' + sequences.get(char)
@@ -35,7 +38,7 @@ class Message:
         escape = False
         for char in value:
             if escape:
-                out_value += ESCAPE_SEQUENCES.get(char, char)
+                out_value += _ESCAPE_SEQUENCES.get(char, char)
                 escape = False
             else:
                 if char == '\\':
@@ -69,16 +72,19 @@ class Message:
             name = prefix[1:]
             ident = None
             host = None
-            if '!' in name:
-                name, ident = name.split('!', 1)
-                if '@' in ident:
-                    ident, host = ident.split('@', 1)
-            elif '@' in name:
+            if '@' in name:
                 name, host = name.split('@', 1)
+                if '!' in name:
+                    name, ident = name.split('!', 1)
             prefix = name, ident, host
 
         command, *line = line.split(None, 1)
-        command = command.upper()
+        command = command.upper()  # TODO check if really case-insensitive
+        if command.isdigit():
+            try:
+                command = ServerReply(command)
+            except ValueError:
+                print("unknown server reply code", command)
 
         params = []
         if line:
