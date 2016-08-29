@@ -1,5 +1,4 @@
 
-import sys
 import time
 from shanghai.plugin import Plugin
 
