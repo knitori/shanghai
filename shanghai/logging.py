@@ -5,6 +5,7 @@ import hashlib
 import io
 import logging
 import os
+import sys
 
 import pytz
 
@@ -28,15 +29,41 @@ def _print_like(func):
     return _wrap
 
 
+def _frame_info(func):
+    @functools.wraps(func)
+    def _wrap(self, *args):
+        global _LOGGING_CONFIG
+        debug = _LOGGING_CONFIG.get('logging', {}).get('debug_frames', False)
+        if debug:
+            frame = sys._getframe(1)
+            lno = frame.f_lineno
+            fn = frame.f_code.co_filename
+            info_string = 'Frame:\n    \033[30;1m{} (line {})\n'\
+                .format(fn, lno)
+            with open(fn, 'r', encoding='utf-8') as f:
+                lines = list(f)
+                code = '\n'.join(
+                    '{:>3d}: {}'.format(_lno, line.rstrip())
+                    for _lno, line
+                    in enumerate(lines[lno-3:lno+2], start=lno-2)
+                )
+            info_string += code + '\n'
+            info_string += '\033[0m\n'
+            return func(self, info_string, '  \033[33;1m', *args, '\033[0m')
+        else:
+            return func(self, *args)
+    return _wrap
+
+
 class Logger(logging.Logger):
     """Wrap _print_link around so we can use logger.info etc. similar to the
     print function. e.g. logging.info('foo', 'bar', 'baz')"""
-    info = _print_like(logging.Logger.info)
-    debug = _print_like(logging.Logger.debug)
-    warn = _print_like(logging.Logger.warn)
-    warning = _print_like(logging.Logger.warning)
-    error = _print_like(logging.Logger.error)
-    exception = _print_like(logging.Logger.exception)
+    info = _frame_info(_print_like(logging.Logger.info))
+    debug = _frame_info(_print_like(logging.Logger.debug))
+    warn = _frame_info(_print_like(logging.Logger.warn))
+    warning = _frame_info(_print_like(logging.Logger.warning))
+    error = _frame_info(_print_like(logging.Logger.error))
+    exception = _frame_info(_print_like(logging.Logger.exception))
 
 
 class FileHandler(logging.FileHandler):

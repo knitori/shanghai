@@ -2,6 +2,7 @@
 # set global logging level
 logging:
   level: INFO
+  debug_frames: false
 
 networks:
   GLOBAL:
