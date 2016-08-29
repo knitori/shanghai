@@ -43,7 +43,9 @@ def _frame_info(func):
             with open(fn, 'r', encoding='utf-8') as f:
                 lines = list(f)
                 code = '\n'.join(
-                    '{:>3d}: {}'.format(_lno, line.rstrip())
+                    '{:>3d}{} {}'.format(
+                        _lno, ':' if _lno == lno else ' ', line.rstrip()
+                    )
                     for _lno, line
                     in enumerate(lines[lno-3:lno+2], start=lno-2)
                 )
