@@ -35,6 +35,8 @@ def _frame_info(func):
         global _LOGGING_CONFIG
         debug = _LOGGING_CONFIG.get('logging', {}).get('debug_frames', False)
         if debug:
+            # frame 0 is this current function _wrap.
+            # we go one up, and get the frame of the calling function.
             frame = sys._getframe(1)
             lno = frame.f_lineno
             fn = frame.f_code.co_filename
